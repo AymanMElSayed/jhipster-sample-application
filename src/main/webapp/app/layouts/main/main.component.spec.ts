@@ -7,7 +7,6 @@ import { Subject, of } from 'rxjs';
 import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 import { AccountService } from 'app/core/auth/account.service';
-import { FindLanguageFromKeyPipe } from 'app/shared/language/find-language-from-key.pipe';
 
 import { MainComponent } from './main.component';
 
@@ -16,7 +15,6 @@ describe('MainComponent', () => {
   let fixture: ComponentFixture<MainComponent>;
   let titleService: Title;
   let translateService: TranslateService;
-  let findLanguageFromKeyPipe: FindLanguageFromKeyPipe;
   let mockAccountService: AccountService;
   const routerEventsSubject = new Subject<RouterEvent>();
   const routerState: any = { snapshot: { root: { data: {} } } };
@@ -31,7 +29,6 @@ describe('MainComponent', () => {
       declarations: [MainComponent],
       providers: [
         Title,
-        FindLanguageFromKeyPipe,
         AccountService,
         {
           provide: Router,
@@ -48,7 +45,6 @@ describe('MainComponent', () => {
     comp = fixture.componentInstance;
     titleService = TestBed.inject(Title);
     translateService = TestBed.inject(TranslateService);
-    findLanguageFromKeyPipe = TestBed.inject(FindLanguageFromKeyPipe);
     mockAccountService = TestBed.inject(AccountService);
     mockAccountService.identity = jest.fn(() => of(null));
     mockAccountService.getAuthenticationState = jest.fn(() => of(null));
@@ -185,20 +181,16 @@ describe('MainComponent', () => {
       comp.ngOnInit();
 
       // WHEN
-      findLanguageFromKeyPipe.isRTL = jest.fn(() => false);
       translateService.onLangChange.emit({ lang: 'lang1', translations: null });
 
       // THEN
       expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang1');
-      expect(document.querySelector('html')?.getAttribute('dir')).toEqual('ltr');
 
       // WHEN
-      findLanguageFromKeyPipe.isRTL = jest.fn(() => true);
       translateService.onLangChange.emit({ lang: 'lang2', translations: null });
 
       // THEN
       expect(document.querySelector('html')?.getAttribute('lang')).toEqual('lang2');
-      expect(document.querySelector('html')?.getAttribute('dir')).toEqual('rtl');
     });
   });
 });
