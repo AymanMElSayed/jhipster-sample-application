@@ -3,7 +3,6 @@ const { merge } = require('webpack-merge');
 const path = require('path');
 const { hashElement } = require('folder-hash');
 const MergeJsonWebpackPlugin = require('merge-jsons-webpack-plugin');
-const postcssRTLCSS = require('postcss-rtlcss');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const WebpackNotifierPlugin = require('webpack-notifier');
@@ -27,7 +26,7 @@ module.exports = async (config, options, targetOptions) => {
         extensions: ['js', 'ts'],
       }),
       new WebpackNotifierPlugin({
-        title: 'Jhipster Sample Application',
+        title: 'My App',
         contentImage: path.join(__dirname, 'logo-jhipster.png'),
       })
     );
@@ -47,7 +46,7 @@ module.exports = async (config, options, targetOptions) => {
           port: 9000,
           https: tls,
           proxy: {
-            target: `http${tls ? 's' : ''}://localhost:${targetOptions.target === 'serve' ? '4200' : ''}`,
+            target: `http${tls ? 's' : ''}://localhost:${targetOptions.target === 'serve' ? '4200' : '8080'}`,
             ws: true,
             proxyOptions: {
               changeOrigin: false, //pass the Host header to the backend unchanged  https://github.com/Browsersync/browser-sync/issues/430
@@ -105,20 +104,6 @@ module.exports = async (config, options, targetOptions) => {
     config.plugins.push(new CopyWebpackPlugin({ patterns }));
   }
 
-  const scssRule = config.module.rules.find(x => x.test && x.test.toString().includes('scss'));
-  const uses = scssRule.rules.flatMap(r => r.use || r.oneOf.flatMap(o => o.use));
-  const postcssLoaderOptions = uses.filter(u => u.loader.includes('postcss-loader')).map(u => u.options);
-  postcssLoaderOptions.forEach(options => {
-    const generateOptions = options.postcssOptions;
-    options.postcssOptions = loader => {
-      const postcssOptions = generateOptions(loader);
-      postcssOptions.plugins.push(postcssRTLCSS());
-      return postcssOptions;
-    };
-    // https://github.com/angular/angular-cli/blob/4b9199d97f3bcb10710b5049b04d8a04436e2dd4/packages/angular_devkit/build_angular/src/webpack/configs/styles.ts#L201-L202
-    options.postcssOptions.config = false;
-  });
-
   config.plugins.push(
     new webpack.DefinePlugin({
       I18N_HASH: JSON.stringify(languagesHash.hash),
@@ -135,7 +120,6 @@ module.exports = async (config, options, targetOptions) => {
       output: {
         groupBy: [
           { pattern: './src/main/webapp/i18n/en/*.json', fileName: './i18n/en.json' },
-          { pattern: './src/main/webapp/i18n/ar-ly/*.json', fileName: './i18n/ar-ly.json' },
           // jhipster-needle-i18n-language-webpack - JHipster will add/remove languages in this array
         ],
       },
@@ -143,8 +127,7 @@ module.exports = async (config, options, targetOptions) => {
   );
 
   config = merge(
-    config,
-    targetOptions.target === 'serve' ? {} : require('./webpack.microfrontend')(config, options, targetOptions)
+    config
     // jhipster-needle-add-webpack-config - JHipster will add custom config
   );
 

@@ -4,7 +4,7 @@
   </div>
 
   <div class="col-md-9">
-    <h1 class="display-4"><span jhiTranslate="home.title">Welcome, Java Hipster!</span> (Jhipster Sample Application)</h1>
+    <h1 class="display-4"><span jhiTranslate="home.title">Welcome, Java Hipster!</span> (My App)</h1>
 
     <p class="lead" jhiTranslate="home.subtitle">This is your homepage</p>
 
@@ -22,6 +22,11 @@
           >, you can try the default accounts:<br />- Administrator (login="admin" and password="admin") <br />- User (login="user" and
           password="user").</span
         >
+      </div>
+
+      <div class="alert alert-warning" *ngSwitchCase="false">
+        <span jhiTranslate="global.messages.info.register.noaccount">You don't have an account yet?</span>&nbsp;
+        <a class="alert-link" routerLink="account/register" jhiTranslate="global.messages.info.register.link">Register a new account</a>
       </div>
     </div>
 

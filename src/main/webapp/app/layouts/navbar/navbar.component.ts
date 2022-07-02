@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Compiler, Injector, NgModuleFactory, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { SessionStorageService } from 'ngx-webstorage';
@@ -29,6 +29,8 @@ export class NavbarComponent implements OnInit {
     private loginService: LoginService,
     private translateService: TranslateService,
     private sessionStorageService: SessionStorageService,
+    private compiler: Compiler,
+    private injector: Injector,
     private accountService: AccountService,
     private profileService: ProfileService,
     private router: Router
@@ -71,5 +73,10 @@ export class NavbarComponent implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  private loadModule(moduleType: Type<any>): void {
+    const moduleFactory = this.compiler.compileModuleAndAllComponentsSync(moduleType);
+    moduleFactory.ngModuleFactory.create(this.injector);
   }
 }
